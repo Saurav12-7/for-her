@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do You Like Me? 💖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 50%, #fbcfe8 100%);
+            transition: background 0.8s ease;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        body.sad-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #090d16 100%);
+        }
+        .font-romantic {
+            font-family: 'Pacifico', cursive;
+        }
+        #main-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #main-card.sad-card {
+            background: rgba(30, 41, 59, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        #yes-btn {
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+        }
+        #no-btn {
+            transition: left 0.26s cubic-bezier(0.22, 1, 0.36, 1), top 0.26s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease;
+            touch-action: manipulation;
+            max-width: calc(100vw - 32px);
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: floatSlow 3.4s ease-in-out infinite;
+        }
+        @keyframes pulseHeart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .animate-pulse-heart {
+            animation: pulseHeart 1.8s ease-in-out infinite;
+        }
+        @keyframes heartbreakShake {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(-6deg); }
+            40% { transform: rotate(6deg); }
+            60% { transform: rotate(-4deg); }
+            80% { transform: rotate(4deg); }
+        }
+        .animate-heartbreak {
+            animation: heartbreakShake 0.7s ease-in-out;
+        }
+        .crack-left {
+            transform-origin: center;
+            animation: splitLeft 0.9s forwards ease-out;
+        }
+        .crack-right {
+            transform-origin: center;
+            animation: splitRight 0.9s forwards ease-out;
+        }
+        @keyframes splitLeft {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-7px, 4px) rotate(-6deg); }
+        }
+        @keyframes splitRight {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(7px, 4px) rotate(6deg); }
+        }
+        .closing-animation {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        #custom-suit-img {
+            border-radius: 1.25rem;
+            object-fit: cover;
+            object-position: center 18%;
+            border: 3px solid rgba(255, 255, 255, 0.92);
+            box-shadow:
+                0 18px 40px rgba(225, 29, 72, 0.22),
+                0 8px 18px rgba(15, 23, 42, 0.16),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+            background: radial-gradient(circle at 50% 30%, #fff1f2 0%, #fce7f3 70%, #fecdd3 100%);
+        }
+        .image-frame {
+            isolation: isolate;
+            border-radius: 1.5rem;
+        }
+        .image-frame::before,
+        .image-frame::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            border-radius: 9999px;
+            filter: blur(10px);
+        }
+        .image-frame::before {
+            width: 70%;
+            height: 70%;
+            left: -12%;
+            top: -8%;
+            background: rgba(251, 113, 133, 0.38);
+        }
+        .image-frame::after {
+            width: 55%;
+            height: 55%;
+            right: -10%;
+            bottom: -8%;
+            background: rgba(244, 114, 182, 0.32);
+        }
+        .particle-heart {
+            position: fixed;
+            bottom: -40px;
+            pointer-events: none;
+            z-index: 1;
+            animation: riseUp linear forwards;
+        }
+        @keyframes riseUp {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.9; }
+            100% { transform: translateY(-110vh) scale(1.25); opacity: 0; }
+        }
+        .particle-rain {
+            position: fixed;
+            top: -40px;
+            pointer-events: none;
+            z-index: 1;
+            animation: fallDown linear forwards;
+        }
+        @keyframes fallDown {
+            0% { transform: translateY(0); opacity: 0.85; }
+            100% { transform: translateY(110vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-[100dvh] w-full flex items-start sm:items-center justify-center p-3 sm:p-6 py-5 sm:py-8 select-none relative">
+
+    <!-- Ambient Background Particles Layer -->
+    <div id="particles-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
+
+    <!-- Main Centered Card -->
+    <main id="main-card" class="relative z-10 w-full max-w-[92vw] sm:max-w-md rounded-3xl shadow-2xl p-5 sm:p-8 text-center my-auto">
+
+        <!-- ========================================================= -->
+        <!-- VIEW 1: INITIAL QUESTION ("DO YOU LIKE ME?")              -->
+        <!-- ========================================================= -->
+        <section id="question-view" class="flex flex-col items-center">
+            <!-- Cute Animated Heart Emblem -->
+            <div class="w-20 h-20 sm:w-28 sm:h-28 mb-3 sm:mb-4 animate-pulse-heart flex items-center justify-center">
+                <svg viewBox="0 0 120 110" class="w-full h-full drop-shadow-lg" role="img" aria-label="Glowing Pink Heart">
+                    <defs>
+                        <linearGradient id="mainHeartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#fb7185"/>
+                            <stop offset="50%" stop-color="#f43f5e"/>
+                            <stop offset="100%" stop-color="#e11d48"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M60 100 C60 100 10 68 10 34 C10 18 23 8 38 8 C48 8 56 14 60 22 C64 14 72 8 82 8 C97 8 110 18 110 34 C110 68 60 100 60 100 Z" fill="url(#mainHeartGrad)"/>
+                    <ellipse cx="34" cy="26" rx="9" ry="5" transform="rotate(-32 34 26)" fill="rgba(255,255,255,0.4)"/>
+                </svg>
+            </div>
+
+            <!-- Central Question -->
+            <h1 class="font-romantic text-2xl sm:text-4xl text-rose-600 mb-2 leading-tight">
+                Do you like me?
+            </h1>
+            <p id="sub-prompt" class="text-rose-900/75 text-xs sm:text-base font-medium mb-5 sm:mb-7 min-h-[24px] px-1">
+                Be honest... I promise I won't bite! 💕
+            </p>
+
+            <!-- Buttons Wrapper -->
+            <div id="buttons-area" class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 w-full min-h-[68px] sm:min-h-[76px]">
+                <!-- YES BUTTON -->
+                <button
+                    id="yes-btn"
+                    type="button"
+                    class="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-bold rounded-2xl px-6 py-3 sm:px-8 sm:py-3.5 text-base sm:text-lg shadow-lg shadow-rose-500/30 active:scale-95 cursor-pointer z-20 max-w-full break-words"
+                >
+                    Yes
+                </button>
+
+                <!-- NO BUTTON (Starts inline, turns fixed when dodging) -->
+                <button
+                    id="no-btn"
+                    type="button"
+                    class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-2xl px-6 py-3 sm:px-7 sm:py-3.5 text-base sm:text-lg shadow-md active:scale-95 cursor-pointer z-30"
+                >
+                    No
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 2: "YES" OUTCOME (ANIME GUY IN BLACK SUIT WITH ROSES) -->
+        <!-- ========================================================= -->
+        <section id="yes-view" class="hidden flex-col items-center">
+            <!-- Character Display: Uses your local 'gojo-roses.png' seamlessly if present, otherwise displays custom vector art -->
+            <div class="image-frame w-52 h-64 sm:w-72 sm:h-96 mx-auto mb-4 animate-float flex items-center justify-center relative">
+                <!-- Direct Image Slot (Place 'gojo-roses.png' in the same folder as index.html to display your exact image) -->
+                <img
+                    id="custom-suit-img"
+                    src="Gojo take the flower and gift for you_.jpg"
+                    alt="Anime guy in black suit holding a bouquet of red roses"
+                    class="w-full h-full drop-shadow-xl"
+                    onerror="this.style.display='none'; document.getElementById('fallback-anime-svg').classList.remove('hidden');"
+                />
+
+                <!-- Automatic Fallback Custom Anime Vector Illustration -->
+                <svg id="fallback-anime-svg" viewBox="0 0 280 360" class="hidden w-full h-full drop-shadow-xl" role="img" aria-label="Anime guy with spiky white hair and round sunglasses in a black suit holding a bouquet of red roses">
+                    <defs>
+                        <!-- Soft Romantic Aura Gradient -->
+                        <radialGradient id="animeAuraGrad" cx="50%" cy="45%" r="50%">
+                            <stop offset="0%" stop-color="#ffe4e6" stop-opacity="0.9"/>
+                            <stop offset="70%" stop-color="#fecdd3" stop-opacity="0.45"/>
+                            <stop offset="100%" stop-color="#fff1f2" stop-opacity="0"/>
+                        </radialGradient>
+                        <!-- Silver-White Spiky Hair Shading -->
+                        <linearGradient id="silverHairGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ffffff"/>
+                            <stop offset="65%" stop-color="#f1f5f9"/>
+                            <stop offset="100%" stop-color="#cbd5e1"/>
+                        </linearGradient>
+                        <!-- Fair Anime Skin Tone -->
+                        <linearGradient id="animeSkinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ffedd5"/>
+                            <stop offset="100%" stop-color="#fed7aa"/>
+                        </linearGradient>
+                        <!-- Round Dark Sunglasses Lens -->
+                        <linearGradient id="lensGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#1e293b"/>
+                            <stop offset="50%" stop-color="#0f172a"/>
+                            <stop offset="100%" stop-color="#020617"/>
+                        </linearGradient>
+                        <!-- Sleek Black Suit Fabric -->
+                        <linearGradient id="animeSuitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#27272a"/>
+                            <stop offset="55%" stop-color="#18181b"/>
+                            <stop offset="100%" stop-color="#09090b"/>
+                        </linearGradient>
+                        <!-- Suit Lapel & Highlights -->
+                        <linearGradient id="animeLapelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#3f3f46"/>
+                            <stop offset="100%" stop-color="#18181b"/>
+                        </linearGradient>
+                        <!-- Deep Crimson Rose Gradient -->
+                        <radialGradient id="roseCrimson" cx="35%" cy="35%" r="65%">
+                            <stop offset="0%" stop-color="#f43f5e"/>
+                            <stop offset="55%" stop-color="#dc2626"/>
+                            <stop offset="100%" stop-color="#881337"/>
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Soft Background Spotlight & Sparkles -->
+                    <circle cx="140" cy="175" r="128" fill="url(#animeAuraGrad)"/>
+                    <path d="M46 72 L49 81 L58 84 L49 87 L46 96 L43 87 L34 84 L43 81 Z" fill="#fb7185" opacity="0.8"/>
+                    <path d="M236 138 L238 144 L244 146 L238 148 L236 154 L234 148 L228 146 L234 144 Z" fill="#f43f5e" opacity="0.75"/>
+                    <path d="M52 215 C52 215 43 209 43 203 C43 199.5 45.8 197 48.5 197 C50.2 197 51.4 198.2 52 199.5 C52.6 198.2 53.8 197 55.5 197 C58.2 197 61 199.5 61 203 C61 209 52 215 52 215 Z" fill="#fb7185"/>
+
+                    <!-- ===================================================== -->
+                    <!-- FULL STYLISH ANIME FIGURE (SLIGHT 3/4 POSE)           -->
+                    <!-- ===================================================== -->
+
+                    <!-- Suit Trousers / Legs (Tall & Slender Anime Proportions) -->
+                    <!-- Back/Left Leg -->
+                    <path d="M111 226 L108 286 L112 344 L128 344 L131 286 L133 234 Z" fill="#121215" stroke="#09090b" stroke-width="1.5"/>
+                    <!-- Front/Right Leg -->
+                    <path d="M128 228 L127 288 L131 348 L149 348 L151 286 L151 224 Z" fill="url(#animeSuitGrad)" stroke="#09090b" stroke-width="1.5"/>
+                    <!-- Trouser Crease Lines -->
+                    <path d="M118 242 L119 336" stroke="#3f3f46" stroke-width="1.2" opacity="0.6"/>
+                    <path d="M139 240 L140 340" stroke="#3f3f46" stroke-width="1.2" opacity="0.6"/>
+
+                    <!-- Polished Black Dress Shoes -->
+                    <path d="M112 343 L97 348 C93 350 93 354 99 355 L127 355 L128 343 Z" fill="#09090b"/>
+                    <path d="M101 349 Q110 347 118 349" stroke="#52525b" stroke-width="1.2" fill="none"/>
+                    <path d="M131 347 L119 354 C115 356 116 359 122 359 L149 359 L149 347 Z" fill="#18181b"/>
+                    <path d="M123 354 Q132 352 140 354" stroke="#52525b" stroke-width="1.2" fill="none"/>
+
+                    <!-- Crisp White Dress Shirt (Untucked Cool Style) -->
+                    <path d="M110 112 L149 112 L151 226 L135 234 L126 226 L109 229 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+                    <!-- Shirt Fold Shadows -->
+                    <path d="M125 135 L122 224" stroke="#e2e8f0" stroke-width="2"/>
+                    <path d="M138 145 L141 225" stroke="#e2e8f0" stroke-width="2"/>
+
+                    <!-- Belt & Silver Buckle -->
+                    <path d="M110 218 L150 222 L150 229 L110 225 Z" fill="#09090b"/>
+                    <rect x="122" y="218" width="11" height="8" rx="1.5" fill="none" stroke="#94a3b8" stroke-width="1.8"/>
+
+                    <!-- Loosened Black Necktie -->
+                    <polygon points="124,116 133,116 131,125 125,125" fill="#18181b"/>
+                    <polygon points="125,125 131,125 123,205 117,212 113,204" fill="#09090b"/>
+                    <line x1="126" y1="130" x2="118" y2="202" stroke="#3f3f46" stroke-width="1" opacity="0.6"/>
+
+                    <!-- Open Tailored Black Suit Jacket -->
+                    <!-- Left Side of Jacket (With Hand in Pocket Pose) -->
+                    <path d="M114 110 L96 116 C91 118 89 124 89 132 L85 178 L96 220 L112 226 L117 166 L122 112 Z" fill="url(#animeSuitGrad)" stroke="#09090b" stroke-width="1.5"/>
+                    <!-- Left Arm Bent with Hand Tucked Coolly in Trouser Pocket -->
+                    <path d="M93 122 L83 166 L103 206 L112 203 L96 166 L104 126 Z" fill="#18181b" stroke="#09090b" stroke-width="1.4"/>
+                    <!-- Left Lapel -->
+                    <polygon points="115,111 106,144 114,151 110,160 118,176 121,124" fill="url(#animeLapelGrad)"/>
+
+                    <!-- Right Side of Jacket -->
+                    <path d="M145 110 L166 118 L169 216 L146 226 L138 175 L139 112 Z" fill="url(#animeSuitGrad)" stroke="#09090b" stroke-width="1.5"/>
+                    <!-- Right Lapel -->
+                    <polygon points="144,111 154,144 146,151 150,160 140,176 139,124" fill="url(#animeLapelGrad)"/>
+                    <!-- Jacket Pocket Flap -->
+                    <line x1="149" y1="186" x2="164" y2="182" stroke="#3f3f46" stroke-width="2" stroke-linecap="round"/>
+
+                    <!-- Neck & Sharp Anime Collarbones -->
+                    <path d="M119 94 L119 114 L137 114 L137 94 Z" fill="url(#animeSkinGrad)"/>
+                    <path d="M119 95 Q128 103 137 96" fill="#fdba74" opacity="0.6"/>
+                    <!-- Crisp Shirt Collar -->
+                    <polygon points="118,108 127,118 113,124" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+                    <polygon points="138,108 130,118 143,123" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+
+                    <!-- ===================================================== -->
+                    <!-- ANIME HEAD: SPIKY WHITE HAIR, ROUND GLASSES & SMIRK   -->
+                    <!-- ===================================================== -->
+                    <!-- Ear -->
+                    <path d="M138 74 C143 73 144 83 138 85" fill="url(#animeSkinGrad)" stroke="#d97706" stroke-width="0.8"/>
+
+                    <!-- Sharp Anime Jawline & Face -->
+                    <path d="M107 62 L107 80 C107 88 114 96 122 98 C129 99 136 92 138 82 L139 62 Z" fill="url(#animeSkinGrad)" stroke="#9a3412" stroke-width="0.9"/>
+
+                    <!-- Confident Playful Anime Grin -->
+                    <path d="M113 86 Q121 91 129 85" stroke="#7c2d12" stroke-width="1.6" fill="#ffffff" stroke-linecap="round"/>
+                    <path d="M114 86.5 Q121 90 128 85.5" stroke="#7c2d12" stroke-width="1.1" fill="none"/>
+
+                    <!-- Round Dark Sunglasses (Iconic Circular Frames) -->
+                    <!-- Bridge & Temple Arm -->
+                    <line x1="115" y1="73" x2="120" y2="73" stroke="#1e293b" stroke-width="2"/>
+                    <line x1="133" y1="73" x2="140" y2="71" stroke="#1e293b" stroke-width="1.8"/>
+                    <!-- Left Round Lens -->
+                    <circle cx="109" cy="73" r="6.8" fill="url(#lensGrad)" stroke="#334155" stroke-width="1.4"/>
+                    <path d="M105 70 A4.5 4.5 0 0 1 111 68.5" stroke="#93c5fd" stroke-width="1.3" stroke-linecap="round" fill="none" opacity="0.75"/>
+                    <!-- Right Round Lens -->
+                    <circle cx="126.5" cy="73.5" r="7.2" fill="url(#lensGrad)" stroke="#334155" stroke-width="1.4"/>
+                    <path d="M122 70.5 A4.5 4.5 0 0 1 128.5 69" stroke="#93c5fd" stroke-width="1.3" stroke-linecap="round" fill="none" opacity="0.75"/>
+
+                    <!-- Spiky Silver-White Hair (Layered Dynamic Anime Spikes) -->
+                    <g stroke="#64748b" stroke-width="1.1" stroke-linejoin="round">
+                        <!-- Back & Top Spikes -->
+                        <path d="M104 65 L93 58 L103 54 L91 44 L106 44 L99 30 L114 37 L115 22 L125 34 L132 19 L136 34 L147 23 L144 38 L156 34 L147 47 L158 49 L146 57 L153 64 L140 67 L138 74 L132 63 L127 71 L122 61 L117 72 L113 61 L107 69 Z" fill="url(#silverHairGrad)"/>
+                        <!-- Inner Hair Strand Accent Lines -->
+                        <path d="M115 37 L118 55 M126 34 L125 54 M136 34 L133 54" stroke="#94a3b8" stroke-width="0.9" fill="none"/>
+                    </g>
+
+                    <!-- ===================================================== -->
+                    <!-- LUSH BOUQUET OF RED ROSES & RAISED ARM                -->
+                    <!-- ===================================================== -->
+                    <g transform="translate(2, -2)">
+                        <!-- Dark Green Rose Stems & Foliage -->
+                        <path d="M153 122 L168 92 M156 123 L176 96 M150 120 L160 88 M158 124 L182 102" stroke="#14532d" stroke-width="3.5" stroke-linecap="round"/>
+                        <!-- Lush Green Leaves Framing the Bouquet -->
+                        <ellipse cx="144" cy="84" rx="11" ry="5.5" transform="rotate(-35 144 84)" fill="#15803d"/>
+                        <ellipse cx="152" cy="64" rx="11" ry="5.5" transform="rotate(-60 152 64)" fill="#166534"/>
+                        <ellipse cx="174" cy="58" rx="11" ry="5.5" transform="rotate(-85 174 58)" fill="#15803d"/>
+                        <ellipse cx="195" cy="68" rx="11" ry="5.5" transform="rotate(35 195 68)" fill="#166534"/>
+                        <ellipse cx="201" cy="88" rx="11" ry="5.5" transform="rotate(15 201 88)" fill="#15803d"/>
+                        <ellipse cx="188" cy="105" rx="11" ry="5.5" transform="rotate(40 188 105)" fill="#14532d"/>
+                        <ellipse cx="150" cy="102" rx="10" ry="5" transform="rotate(-25 150 102)" fill="#166534"/>
+
+                        <!-- Rich Cluster of 16 Detailed Red Roses -->
+                        <!-- Outer Ring Roses -->
+                        <g transform="translate(152, 74)">
+                            <circle r="10.5" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4,-2 A4.5,4.5 0 1,1 4,2 A3,3 0 1,1 -2,-2" stroke="#fda4af" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(167, 65)">
+                            <circle r="11" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4,-2 A4.5,4.5 0 1,1 4,2 A3,3 0 1,1 -2,-2" stroke="#fda4af" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(184, 68)">
+                            <circle r="11" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4,-2 A4.5,4.5 0 1,1 4,2 A3,3 0 1,1 -2,-2" stroke="#fda4af" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(196, 81)">
+                            <circle r="10.5" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4,-2 A4.5,4.5 0 1,1 4,2 A3,3 0 1,1 -2,-2" stroke="#fda4af" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(193, 96)">
+                            <circle r="10.5" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4,-2 A4.5,4.5 0 1,1 4,2 A3,3 0 1,1 -2,-2" stroke="#fda4af" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(178, 104)">
+                            <circle r="10.5" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4,-2 A4.5,4.5 0 1,1 4,2 A3,3 0 1,1 -2,-2" stroke="#fda4af" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(162, 102)">
+                            <circle r="10" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4,-2 A4.5,4.5 0 1,1 4,2 A3,3 0 1,1 -2,-2" stroke="#fda4af" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(149, 90)">
+                            <circle r="10.5" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4,-2 A4.5,4.5 0 1,1 4,2 A3,3 0 1,1 -2,-2" stroke="#fda4af" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Inner Center Roses -->
+                        <g transform="translate(163, 79)">
+                            <circle r="11" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4.5,-2 A5,5 0 1,1 4.5,2 A3,3 0 1,1 -2,-2" stroke="#fecdd3" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(179, 79)">
+                            <circle r="11" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4.5,-2 A5,5 0 1,1 4.5,2 A3,3 0 1,1 -2,-2" stroke="#fecdd3" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(171, 91)">
+                            <circle r="11.5" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-5,-2 A5,5 0 1,1 5,2 A3,3 0 1,1 -2,-2" stroke="#fecdd3" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                        </g>
+                        <g transform="translate(184, 91)">
+                            <circle r="10.5" fill="url(#roseCrimson)" stroke="#7f1d1d" stroke-width="0.8"/>
+                            <path d="M-4,-2 A4.5,4.5 0 1,1 4,2" stroke="#fecdd3" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Red Ribbon Tied Around the Stems -->
+                        <path d="M150 112 L162 117" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
+                        <path d="M156 115 C149 111 148 121 155 117 Z" fill="#dc2626"/>
+                        <path d="M156 115 C163 111 164 121 157 117 Z" fill="#dc2626"/>
+                        <path d="M155 116 L151 125 M157 116 L161 124" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Right Suit Arm Bent Upward Holding the Bouquet -->
+                    <path d="M164 120 L182 162 C184 168 180 174 173 171 L153 142 L160 132 L171 154 L158 124 Z" fill="url(#animeSuitGrad)" stroke="#09090b" stroke-width="1.5" stroke-linejoin="round"/>
+                    <!-- Suit Sleeve Cuff Buttons -->
+                    <circle cx="164" cy="147" r="1.4" fill="#52525b"/>
+                    <circle cx="167" cy="151" r="1.4" fill="#52525b"/>
+                    <!-- White Shirt Cuff -->
+                    <polygon points="151,141 158,133 161,137 154,145" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.8"/>
+                    <!-- Right Hand Grasping the Bouquet Stems -->
+                    <g>
+                        <path d="M148 126 C146 121 152 117 157 120 L161 129 C161 134 155 138 150 135 Z" fill="url(#animeSkinGrad)" stroke="#9a3412" stroke-width="0.9"/>
+                        <!-- Finger Knuckle Details -->
+                        <path d="M149 124 L155 123 M149 128 L156 127 M150 132 L156 131" stroke="#c2410c" stroke-width="1" stroke-linecap="round"/>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Sweet Message -->
+            <h2 class="font-romantic text-2xl sm:text-4xl text-rose-600 mb-2">
+                Yay! You made my day! ❤️
+            </h2>
+            <p class="text-rose-900/80 text-xs sm:text-base font-medium mb-5 sm:mb-6 max-w-xs mx-auto">
+                I brought these red roses just for you. Can't wait for our next moment together! 🌹✨
+            </p>
+
+            <!-- Close Webpage Action Button -->
+            <button
+                id="close-page-btn"
+                type="button"
+                class="w-full sm:w-auto bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-bold rounded-2xl px-7 py-3 sm:px-8 sm:py-3.5 text-sm sm:text-base shadow-lg shadow-rose-500/30 transition-all active:scale-95 cursor-pointer"
+            >
+                Close Webpage 💖
+            </button>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 3: "NO" 6TH ATTEMPT OUTCOME (BROKEN HEART)           -->
+        <!-- ========================================================= -->
+        <section id="broken-heart-view" class="hidden flex-col items-center">
+            <!-- Animated Broken Heart SVG Illustration -->
+            <div class="w-36 h-36 sm:w-52 sm:h-52 mx-auto mb-3 sm:mb-4 animate-heartbreak">
+                <svg viewBox="0 0 200 180" class="w-full h-full drop-shadow-2xl" role="img" aria-label="Broken Heart">
+                    <defs>
+                        <linearGradient id="brokenGradLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f43f5e"/>
+                            <stop offset="100%" stop-color="#881337"/>
+                        </linearGradient>
+                        <linearGradient id="brokenGradRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#e11d48"/>
+                            <stop offset="100%" stop-color="#4c0519"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Left Half of the Heart with Jagged Crack Edge -->
+                    <g class="crack-left">
+                        <path d="M100 42 L88 64 L106 84 L86 108 L103 130 L100 156 C100 156 24 108 24 58 C24 34 44 18 66 18 C81 18 93 27 100 42 Z" fill="url(#brokenGradLeft)"/>
+                        <!-- Gloss highlight on left lobe -->
+                        <ellipse cx="52" cy="44" rx="11" ry="6" transform="rotate(-35 52 44)" fill="rgba(255,255,255,0.22)"/>
+                    </g>
+
+                    <!-- Right Half of the Heart with Matching Jagged Crack Edge -->
+                    <g class="crack-right">
+                        <path d="M100 42 C107 27 119 18 134 18 C156 18 176 34 176 58 C176 108 100 156 100 156 L103 130 L86 108 L106 84 L88 64 L100 42 Z" fill="url(#brokenGradRight)"/>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Dramatic Sad Message -->
+            <h2 class="font-romantic text-2xl sm:text-4xl text-rose-400 mb-2">
+                My heart is broken... 💔
+            </h2>
+            <p class="text-slate-300 text-xs sm:text-base font-medium mb-6 sm:mb-7 max-w-xs mx-auto">
+                Ouch... after 5 tries, you really meant it. I'll just go cry in the rain now... 😢🌧️
+            </p>
+
+            <!-- Subtle Reconsider / Try Again Button -->
+            <button
+                id="reset-btn"
+                type="button"
+                class="bg-slate-700/80 hover:bg-slate-600 text-slate-200 border border-slate-500/40 font-semibold rounded-2xl px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm transition-all active:scale-95 cursor-pointer"
+            >
+                Wait, let me reconsider 🥺
+            </button>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 4: GRACEFUL CLOSED STATE (AFTER CLICKING CLOSE)      -->
+        <!-- ========================================================= -->
+        <section id="closed-view" class="hidden flex-col items-center py-6">
+            <div class="text-4xl sm:text-5xl mb-4 animate-bounce">💐</div>
+            <h2 class="font-romantic text-2xl sm:text-3xl text-rose-600 mb-2">
+                See you soon! ❤️
+            </h2>
+            <p class="text-rose-900/75 text-xs sm:text-base mb-6">
+                This page has been closed with love. Have the sweetest day!
+            </p>
+            <button
+                id="reopen-btn"
+                type="button"
+                class="text-xs font-semibold text-rose-500 hover:text-rose-700 underline underline-offset-4 cursor-pointer"
+            >
+                Reopen page
+            </button>
+        </section>
+
+    </main>
+
+    <script>
+        /**
+         * Interactive "Do You Like Me?" Webpage Controller
+         * Handles:
+         *  - 5 progressive dodging attempts on the "No" button (desktop hover/click & mobile touch)
+         *  - Safe viewport boundary calculations so "No" never overlaps "Yes" or exits any screen size
+         *  - Dynamic text & size scaling on the "Yes" button
+         *  - 6th attempt broken heart reveal + raindrop particles
+         *  - "Yes" button celebration with gojo-roses.png (or fallback SVG) & floating hearts
+         *  - Graceful webpage close animation
+         */
+        (function () {
+            // DOM Elements
+            const body = document.body;
+            const mainCard = document.getElementById('main-card');
+            const questionView = document.getElementById('question-view');
+            const yesView = document.getElementById('yes-view');
+            const brokenHeartView = document.getElementById('broken-heart-view');
+            const closedView = document.getElementById('closed-view');
+
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const subPrompt = document.getElementById('sub-prompt');
+            const closePageBtn = document.getElementById('close-page-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const reopenBtn = document.getElementById('reopen-btn');
+            const particlesContainer = document.getElementById('particles-container');
+
+            // State variables
+            let noAttempts = 0;
+            const MAX_DODGE_ATTEMPTS = 5;
+            let lastDodgeTimestamp = 0;
+            let particleInterval = null;
+
+            // 5 Playful pleading messages displayed on the "Yes" button
+            const yesMessages = [
+                "Are you sure? Click Yes!",
+                "Think again! 💕",
+                "Pretty please? 🥺",
+                "Don't do this to me! 😭",
+                "Last chance to say Yes! ❤️"
+            ];
+
+            // Matching subtle helper captions above the buttons
+            const subMessages = [
+                "Hey! Where are you going? 👀",
+                "Wrong button, the pink one looks much nicer! ✨",
+                "My fingers are crossed over here... 🤞",
+                "You wouldn't break my heart, right?! 😢",
+                "Okay, I stopped running... be gentle! 💓"
+            ];
+
+            /**
+             * Computes a guaranteed safe (x, y) coordinate strictly inside the visible screen
+             * and outside the bounding box of the "Yes" button so it never clips off-screen or overlaps.
+             */
+            function getSafeRandomPosition() {
+                const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+                const viewportHeight = document.documentElement.clientHeight || window.innerHeight;
+
+                const btnRect = noBtn.getBoundingClientRect();
+                const btnWidth = Math.max(btnRect.width, 84);
+                const btnHeight = Math.max(btnRect.height, 48);
+
+                // Safe padding from screen edges (adapts for compact mobile screens)
+                const edgePadding = viewportWidth < 400 ? 14 : 24;
+
+                const minX = edgePadding;
+                const minY = edgePadding;
+                const maxX = Math.max(minX, viewportWidth - btnWidth - edgePadding);
+                const maxY = Math.max(minY, viewportHeight - btnHeight - edgePadding);
+
+                const yesRect = yesBtn.getBoundingClientRect();
+                const buffer = 16; // Minimum clearance around the Yes button
+
+                let chosenX = minX;
+                let chosenY = minY;
+                let bestDistance = -1;
+
+                // Sample candidate positions and pick one that never overlaps Yes and jumps meaningfully away
+                for (let attempt = 0; attempt < 35; attempt++) {
+                    const candidateX = minX + Math.random() * (maxX - minX);
+                    const candidateY = minY + Math.random() * (maxY - minY);
+
+                    const overlapsYes = !(
+                        candidateX + btnWidth + buffer < yesRect.left ||
+                        candidateX - buffer > yesRect.right ||
+                        candidateY + btnHeight + buffer < yesRect.top ||
+                        candidateY - buffer > yesRect.bottom
+                    );
+
+                    if (!overlapsYes) {
+                        const dx = candidateX - btnRect.left;
+                        const dy = candidateY - btnRect.top;
+                        const dist = Math.hypot(dx, dy);
+
+                        // Immediately accept if it jumps a good distance away
+                        if (dist > Math.min(viewportWidth, viewportHeight) * 0.22) {
+                            chosenX = candidateX;
+                            chosenY = candidateY;
+                            bestDistance = dist;
+                            break;
+                        }
+                        if (dist > bestDistance) {
+                            bestDistance = dist;
+                            chosenX = candidateX;
+                            chosenY = candidateY;
+                        }
+                    }
+                }
+
+                // Final strict clamp to guarantee the button can NEVER exceed screen bounds
+                chosenX = Math.min(Math.max(minX, chosenX), maxX);
+                chosenY = Math.min(Math.max(minY, chosenY), maxY);
+
+                return { x: Math.round(chosenX), y: Math.round(chosenY) };
+            }
+
+            /**
+             * Handles attempts 1 through 5 to hover/tap/click the "No" button:
+             *  - Moves "No" smoothly to a safe on-screen location
+             *  - Updates "Yes" button with a pleading message and scales it up gently (responsive to viewport)
+             */
+            function handleNoDodge(event) {
+                if (noAttempts >= MAX_DODGE_ATTEMPTS) return;
+
+                if (event && event.cancelable) {
+                    event.preventDefault();
+                }
+
+                // Debounce rapid double-triggers (e.g., touchstart followed by mouseover)
+                const now = Date.now();
+                if (now - lastDodgeTimestamp < 160) return;
+                lastDodgeTimestamp = now;
+
+                noAttempts++;
+
+                // Promote No button to fixed positioning on the body so card backdrop-filter never clips it
+                if (noBtn.parentElement !== document.body) {
+                    const currentRect = noBtn.getBoundingClientRect();
+                    document.body.appendChild(noBtn);
+                    noBtn.style.position = 'fixed';
+                    noBtn.style.left = `${Math.round(currentRect.left)}px`;
+                    noBtn.style.top = `${Math.round(currentRect.top)}px`;
+                    noBtn.style.margin = '0';
+                }
+
+                // Update Yes button message and responsive scale
+                const msgIndex = Math.min(noAttempts - 1, yesMessages.length - 1);
+                yesBtn.textContent = yesMessages[msgIndex];
+                subPrompt.textContent = subMessages[msgIndex];
+
+                const isMobile = (document.documentElement.clientWidth || window.innerWidth) < 480;
+                const scaleStep = isMobile ? 0.055 : 0.085;
+                const newScale = 1 + noAttempts * scaleStep;
+                yesBtn.style.transform = `scale(${newScale.toFixed(3)})`;
+
+                // Move No button on next animation frame so CSS transition animates smoothly
+                requestAnimationFrame(() => {
+                    const { x, y } = getSafeRandomPosition();
+                    noBtn.style.left = `${x}px`;
+                    noBtn.style.top = `${y}px`;
+                });
+            }
+
+            /**
+             * Starts ambient floating heart particles in the background
+             */
+            function startAmbientHearts(burstCount = 8, intervalMs = 900) {
+                stopParticles();
+                if (!particlesContainer) return;
+                const heartEmojis = ['💖', '💕', '❤️', '💗', '🌸', '✨'];
+
+                const spawnHeart = () => {
+                    if (!particlesContainer) return;
+                    const el = document.createElement('span');
+                    el.className = 'particle-heart';
+                    el.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                    el.style.left = `${Math.random() * 96}vw`;
+                    el.style.fontSize = `${16 + Math.random() * 18}px`;
+                    const duration = 4.5 + Math.random() * 3.5;
+                    el.style.animationDuration = `${duration}s`;
+                    particlesContainer.appendChild(el);
+
+                    setTimeout(() => {
+                        if (el.parentNode) el.remove();
+                    }, duration * 1000);
+                };
+
+                for (let i = 0; i < burstCount; i++) {
+                    setTimeout(spawnHeart, i * 180);
+                }
+                particleInterval = setInterval(spawnHeart, intervalMs);
+            }
+
+            /**
+             * Starts falling teardrop / rain particles for the broken heart screen
+             */
+            function startSadRain() {
+                stopParticles();
+                if (!particlesContainer) return;
+                const sadEmojis = ['💧', '💔', '🌧️'];
+
+                const spawnDrop = () => {
+                    if (!particlesContainer) return;
+                    const el = document.createElement('span');
+                    el.className = 'particle-rain';
+                    el.textContent = sadEmojis[Math.floor(Math.random() * sadEmojis.length)];
+                    el.style.left = `${Math.random() * 96}vw`;
+                    el.style.fontSize = `${14 + Math.random() * 14}px`;
+                    const duration = 2.8 + Math.random() * 2;
+                    el.style.animationDuration = `${duration}s`;
+                    particlesContainer.appendChild(el);
+
+                    setTimeout(() => {
+                        if (el.parentNode) el.remove();
+                    }, duration * 1000);
+                };
+
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(spawnDrop, i * 140);
+                }
+                particleInterval = setInterval(spawnDrop, 350);
+            }
+
+            /**
+             * Clears active background particles
+             */
+            function stopParticles() {
+                if (particleInterval) {
+                    clearInterval(particleInterval);
+                    particleInterval = null;
+                }
+                if (particlesContainer) {
+                    particlesContainer.innerHTML = '';
+                }
+            }
+
+            /**
+             * Handles the 6th click on the "No" button -> Broken Heart view
+             */
+            function handleNoFinalClick(event) {
+                if (noAttempts < MAX_DODGE_ATTEMPTS) {
+                    handleNoDodge(event);
+                    return;
+                }
+
+                // Hide dodging button & switch to broken heart view
+                noBtn.classList.add('hidden');
+                questionView.classList.add('hidden');
+                yesView.classList.add('hidden');
+
+                body.classList.add('sad-mode');
+                mainCard.classList.add('sad-card');
+
+                brokenHeartView.classList.remove('hidden');
+                brokenHeartView.classList.add('flex');
+
+                startSadRain();
+            }
+
+            /**
+             * Handles clicking the "Yes" button at any stage -> Man in black suit with flowers
+             */
+            function handleYesClick() {
+                noBtn.classList.add('hidden');
+                questionView.classList.add('hidden');
+                brokenHeartView.classList.add('hidden');
+
+                body.classList.remove('sad-mode');
+                mainCard.classList.remove('sad-card');
+
+                yesView.classList.remove('hidden');
+                yesView.classList.add('flex');
+
+                // Intensify celebratory floating hearts
+                startAmbientHearts(18, 420);
+            }
+
+            /**
+             * Smoothly closes the webpage view (attempts window.close() + renders graceful closed curtain)
+             */
+            function handleCloseWebpage() {
+                mainCard.classList.add('closing-animation');
+
+                // Attempt native tab close if browser security allows it
+                try {
+                    window.close();
+                } catch (e) {
+                    // Fallback handled smoothly below
+                }
+
+                setTimeout(() => {
+                    yesView.classList.add('hidden');
+                    yesView.classList.remove('flex');
+                    closedView.classList.remove('hidden');
+                    closedView.classList.add('flex');
+                    mainCard.classList.remove('closing-animation');
+                    stopParticles();
+                }, 650);
+            }
+
+            /**
+             * Resets the entire experience back to the initial question
+             */
+            function resetExperience() {
+                noAttempts = 0;
+                body.classList.remove('sad-mode');
+                mainCard.classList.remove('sad-card', 'closing-animation');
+
+                yesView.classList.add('hidden');
+                yesView.classList.remove('flex');
+                brokenHeartView.classList.add('hidden');
+                brokenHeartView.classList.remove('flex');
+                closedView.classList.add('hidden');
+                closedView.classList.remove('flex');
+
+                questionView.classList.remove('hidden');
+
+                // Reset Yes button
+                yesBtn.textContent = 'Yes';
+                yesBtn.style.transform = 'scale(1)';
+                subPrompt.textContent = "Be honest... I promise I won't bite! 💕";
+
+                // Restore No button back inside the flex container
+                const buttonsArea = document.getElementById('buttons-area');
+                noBtn.style.position = '';
+                noBtn.style.left = '';
+                noBtn.style.top = '';
+                noBtn.style.margin = '';
+                noBtn.className = 'bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-2xl px-6 py-3 sm:px-7 sm:py-3.5 text-base sm:text-lg shadow-md active:scale-95 cursor-pointer z-30';
+                buttonsArea.appendChild(noBtn);
+
+                startAmbientHearts(8, 900);
+            }
+
+            // Event Listeners
+            // Desktop mouseover triggers dodge for attempts 1-5
+            noBtn.addEventListener('mouseover', (e) => {
+                if (noAttempts < MAX_DODGE_ATTEMPTS) {
+                    handleNoDodge(e);
+                }
+            });
+
+            // Mobile touchstart triggers dodge immediately before tap completes for attempts 1-5
+            noBtn.addEventListener('touchstart', (e) => {
+                if (noAttempts < MAX_DODGE_ATTEMPTS) {
+                    handleNoDodge(e);
+                }
+            }, { passive: false });
+
+            // Click handles any keyboard/accessibility activation on attempts 1-5, and triggers heartbreak on attempt 6
+            noBtn.addEventListener('click', handleNoFinalClick);
+
+            // Yes, Close, and Reset actions
+            yesBtn.addEventListener('click', handleYesClick);
+            closePageBtn.addEventListener('click', handleCloseWebpage);
+            resetBtn.addEventListener('click', resetExperience);
+            reopenBtn.addEventListener('click', resetExperience);
+
+            // Keep dodging button inside viewport if user resizes or rotates screen
+            window.addEventListener('resize', () => {
+                if (noAttempts > 0 && noAttempts <= MAX_DODGE_ATTEMPTS && !noBtn.classList.contains('hidden')) {
+                    const { x, y } = getSafeRandomPosition();
+                    noBtn.style.left = `${x}px`;
+                    noBtn.style.top = `${y}px`;
+                }
+            });
+
+            // Start initial romantic floating hearts on page load
+            window.addEventListener('load', () => {
+                startAmbientHearts(8, 900);
+            });
+        })();
+    </script>
+</body>
+</html>
